@@ -1,0 +1,19 @@
+# One-click deploy to Render — a persistent Node web service (the right host for a
+# stateful Express + SQLite server). Native better-sqlite3 builds on Render's Linux,
+# the registry is seeded at build time, and the app binds to Render's $PORT.
+services:
+  - type: web
+    name: khoya-paya-surge
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run seed
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # Optional — set in the Render dashboard to enable Claude intake parsing.
+      # The app runs fine without it (deterministic agent).
+      - key: ANTHROPIC_API_KEY
+        sync: false
