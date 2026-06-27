@@ -1,5 +1,9 @@
 node_modules/
-data/*.sqlite*
+
+# Track the seeded registry (data/registry.sqlite) so serverless hosts ship with data,
+# but never the WAL/SHM sidecars or the regenerated CSV exports.
+data/*.sqlite-shm
+data/*.sqlite-wal
 data/*.csv
 .env
 

@@ -2,13 +2,31 @@
 import Database from "better-sqlite3";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, existsSync, copyFileSync } from "node:fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, "..", "data");
-mkdirSync(DATA_DIR, { recursive: true });
 
-export const DB_PATH = join(DATA_DIR, "registry.sqlite");
+// Serverless hosts (Vercel/Lambda) have a read-only filesystem except /tmp. There we
+// copy the pre-seeded database into /tmp once and open it from there (writable, but
+// ephemeral per instance — fine for a demo). Everywhere else we use the local data dir.
+const SERVERLESS = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY);
+
+export let DB_PATH;
+if (SERVERLESS) {
+  DB_PATH = "/tmp/registry.sqlite";
+  try { mkdirSync(dirname(DB_PATH), { recursive: true }); } catch { /* /tmp exists on Lambda */ }
+  if (!existsSync(DB_PATH)) {
+    const seed = [
+      join(process.cwd(), "data", "registry.sqlite"),
+      join(__dirname, "..", "data", "registry.sqlite"),
+    ].find(existsSync);
+    if (seed) { try { copyFileSync(seed, DB_PATH); } catch { /* fall back to empty db */ } }
+  }
+} else {
+  mkdirSync(DATA_DIR, { recursive: true });
+  DB_PATH = join(DATA_DIR, "registry.sqlite");
+}
 
 let _db;
 export function db() {

@@ -25,13 +25,20 @@ app.use(express.static(PUB));
 app.get("/dashboard", (_req, res) => res.sendFile(join(PUB, "dashboard.html")));
 app.get("/", (_req, res) => res.sendFile(join(PUB, "index.html")));
 
-app.listen(PORT, () => {
-  console.log(`\n  Khoya-Paya Surge Engine`);
-  console.log(`  ──────────────────────────────────────────`);
-  console.log(`  Volunteer console : http://localhost:${PORT}/`);
-  console.log(`  Officer dashboard : http://localhost:${PORT}/dashboard`);
-  console.log(`  API               : http://localhost:${PORT}/api/health`);
-  console.log(`  Agent mode        : ${agentMode()}${agentMode() === "heuristic" ? "  (set ANTHROPIC_API_KEY for Claude)" : ""}`);
-  console.log(`  Cases in registry : ${seeded}${seeded ? "" : "  ← run `npm run seed`"}`);
-  console.log(`  ──────────────────────────────────────────\n`);
-});
+// On serverless (Vercel/Lambda) we export the app as the handler and never listen.
+// On a normal host (local, Render, Railway, VPS) we bind to the port.
+const SERVERLESS = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY);
+if (!SERVERLESS) {
+  app.listen(PORT, () => {
+    console.log(`\n  Khoya-Paya Surge Engine`);
+    console.log(`  ──────────────────────────────────────────`);
+    console.log(`  Volunteer console : http://localhost:${PORT}/`);
+    console.log(`  Officer dashboard : http://localhost:${PORT}/dashboard`);
+    console.log(`  API               : http://localhost:${PORT}/api/health`);
+    console.log(`  Agent mode        : ${agentMode()}${agentMode() === "heuristic" ? "  (set ANTHROPIC_API_KEY for Claude)" : ""}`);
+    console.log(`  Cases in registry : ${seeded}${seeded ? "" : "  ← run `npm run seed`"}`);
+    console.log(`  ──────────────────────────────────────────\n`);
+  });
+}
+
+export default app;
