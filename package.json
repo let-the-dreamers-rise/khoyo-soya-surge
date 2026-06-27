@@ -1,0 +1,20 @@
+{
+  "name": "khoya-paya-surge",
+  "version": "1.0.0",
+  "description": "Dual-lane reunification operations for Kumbh Mela 2027 — Khoya-Paya Surge Engine",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed.js",
+    "benchmark": "node src/benchmark.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

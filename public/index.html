@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#23211d" />
+<meta name="description" content="Khoya-Paya Surge Engine — dual-lane reunification console for Kumbh Mela 2027." />
+<title>Khoya-Paya Surge · Volunteer Console</title>
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,500;100,600;100,700;100,800;125,700;125,800&family=Mukta:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&family=Noto+Sans+Tamil:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+<div class="app">
+  <!-- RAIL -->
+  <aside class="rail" id="rail">
+    <div class="rail-brand">
+      <div class="mark" aria-hidden="true"></div>
+      <div><b>Khoya-Paya <span style="font-family:Mukta;font-weight:600;font-size:.78rem;opacity:.7">Surge</span></b><span>Dual-lane ops · v1.0</span></div>
+    </div>
+    <nav class="rail-nav" aria-label="Primary">
+      <div class="rail-sec">Operations</div>
+      <button class="nav-item active" data-view="registry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Live registry <span class="tag" id="navOpen">—</span></button>
+      <button class="nav-item" data-view="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg> New report</button>
+      <button class="nav-item alert" data-view="queue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg> Surge queue <span class="tag" id="navQueue">—</span></button>
+      <div class="rail-sec">Intelligence</div>
+      <button class="nav-item" data-view="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg> Dispatch map</button>
+      <a class="nav-item" href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg> Officer dashboard</a>
+    </nav>
+    <div class="rail-foot">
+      <div class="center-pick">
+        <div class="ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <select id="centerSelect" aria-label="Active center"></select>
+      </div>
+      <div class="conn" id="conn"><span class="led"></span> <span id="connTxt">Synced · all centers</span><button id="connToggle">Go offline</button></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div class="crumb"><h1 id="pageTitle">Live registry</h1><p id="pageSub">All open cases across every Khoya-Paya center</p></div>
+      <div class="tb-spacer"></div>
+      <div class="pill surge hideable" id="surgePill" hidden><span class="dot"></span> Surge mode</div>
+      <div class="pill hideable"><span class="dot" style="background:var(--teal)"></span> Reunited today · <b id="reuToday" style="color:var(--teal-ink)">—</b></div>
+      <div class="pill"><span class="clock" id="clock">—</span></div>
+      <div class="langset" role="group" aria-label="Language"><button data-lang="Hindi" aria-pressed="true">हिं</button><button data-lang="Marathi" aria-pressed="false">मरा</button><button data-lang="Tamil" aria-pressed="false">தமி</button><button data-lang="English" aria-pressed="false">EN</button></div>
+    </header>
+
+    <main class="content">
+      <!-- REGISTRY -->
+      <section class="view active" id="view-registry">
+        <div id="alertBanner"></div>
+        <div class="stat-strip" id="statStrip"></div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-h"><h3>Open reports · सभी केंद्र</h3><span class="sub">live, all centers</span><div class="right"><button class="btn ghost sm" data-view="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> New</button></div></div>
+            <div class="tbl-wrap"><table class="reg"><thead><tr><th>Person</th><th>Center</th><th>Type</th><th>Lane</th><th>Status</th><th style="text-align:right">Match</th></tr></thead><tbody id="regBody"></tbody></table></div>
+          </div>
+          <div class="panel"><div class="panel-h"><h3>Agent activity</h3><span class="sub" id="agentMode">—</span></div><ul class="feed" id="feed"></ul></div>
+        </div>
+      </section>
+
+      <!-- NEW REPORT -->
+      <section class="view" id="view-report">
+        <div class="parse-flag" id="parseFlag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> <span>Claude understood the report and filled the fields — review, fix, then run the match.</span></div>
+        <div class="intake-grid">
+          <div class="panel voice-zone">
+            <h3>Speak the report · बोलकर दर्ज करें</h3>
+            <p class="hint">Press and describe who is lost — age, clothing, where you last stood together. Any language. A volunteer can speak for the family.</p>
+            <button class="mic" id="mic" aria-label="Press and speak"><span class="ring"></span><span class="ring"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+            <div class="mic-state" id="micState">Ready</div>
+            <div class="or">or fill by hand · टैप करके भरें</div>
+            <p class="hint" style="font-size:.82rem">Saving never needs network or a SIM — offline reports queue on this tablet.</p>
+          </div>
+          <div class="panel" style="padding:22px">
+            <form id="reportForm" autocomplete="off">
+              <div class="field"><label for="f-desc">Description · हुलिया <span class="opt">— what the agent matches on</span></label><textarea id="f-desc" placeholder="e.g. माँ, करीब सत्तर साल, नीली साड़ी, चश्मा, राम कुंड के पास बिछड़ीं"></textarea></div>
+              <div class="row2">
+                <div class="field"><label for="f-type">Report type</label><select id="f-type"><option value="missing" selected>Missing person</option><option value="found">Found / unidentified</option></select></div>
+                <div class="field"><label for="f-age">Age band · उम्र</label><select id="f-age"><option value="">—</option><option>0-12</option><option>18-40</option><option>41-60</option><option selected>61-70</option><option>71-80</option><option>80+</option></select></div>
+              </div>
+              <div class="row2">
+                <div class="field"><label for="f-gender">Gender</label><select id="f-gender"><option value="">—</option><option value="female">Female</option><option value="male">Male</option></select></div>
+                <div class="field"><label for="f-lang">Language · भाषा</label><select id="f-lang"><option>Hindi</option><option>Marathi</option><option>Tamil</option><option>Gujarati</option><option>Telugu</option><option>Nepali</option></select></div>
+              </div>
+              <div class="row2">
+                <div class="field"><label for="f-last">Last seen · आख़िरी जगह</label><input id="f-last" placeholder="e.g. Ramkund ghat" /></div>
+                <div class="field"><label for="f-zone">Zone</label><select id="f-zone"><option value="">Auto</option></select></div>
+              </div>
+              <div class="field"><label for="f-mobile">Reporter mobile <span class="opt">— blank = PA only</span></label><input id="f-mobile" placeholder="— none" inputmode="numeric" /></div>
+              <button class="btn go" type="submit" style="width:100%;margin-top:4px" id="submitBtn">Run cross-center match · मिलान खोजें <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- CASE / LANE -->
+      <section class="view" id="view-case">
+        <div class="lane-head">
+          <button class="back" data-view="registry"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Registry</button>
+          <span class="lane-tag" id="caseLaneTag">—</span>
+          <h2 id="caseTitle">Case</h2>
+          <span class="case-id" id="caseId"></span>
+        </div>
+        <div id="caseBody"></div>
+      </section>
+
+      <!-- MAP -->
+      <section class="view" id="view-map">
+        <div class="map-shell">
+          <div id="map"></div>
+          <div class="map-side">
+            <h3 id="mapTitle">Dispatch map</h3>
+            <p class="muted" id="mapSub">32 zones · 1,280 CCTV · 85 chokepoints · 14 police</p>
+            <div class="layers" id="layers"></div>
+            <div class="legend">
+              <span style="width:100%;font-weight:600;color:var(--ink-2)">Zone priority</span>
+              <span class="legend-i"><i class="sw" style="background:#c0392b"></i> 70+ first</span>
+              <span class="legend-i"><i class="sw" style="background:#d4711a"></i> 50–69</span>
+              <span class="legend-i"><i class="sw" style="background:#d9a40a"></i> 30–49</span>
+              <span class="legend-i"><i class="sw" style="background:#9aa0a6"></i> &lt;30</span>
+            </div>
+            <div class="zinfo" id="zinfo"><p class="muted">Click a zone to see its score breakdown.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUEUE -->
+      <section class="view" id="view-queue">
+        <div class="panel">
+          <div class="panel-h"><h3>Priority queue</h3><span class="sub" id="queueSub">surge: children & elderly first</span></div>
+          <div style="padding:16px"><div class="qlist" id="queueList"></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="backdrop" id="backdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modal"></div></div>
+<!-- TOAST -->
+<div class="toast" id="toast"><span class="ts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 6 9 17l-5-5"/></svg></span><div id="toastMsg"></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/js/api.js"></script>
+<script src="/js/map.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

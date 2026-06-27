@@ -1,0 +1,13 @@
+{
+  "name": "Khoya-Paya Surge Engine",
+  "short_name": "Khoya-Paya",
+  "description": "Dual-lane reunification operations console for Kumbh Mela 2027.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f3ec",
+  "theme_color": "#23211d",
+  "orientation": "any",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-06-27T10:32:11.751Z",
+  "dataset": {
+    "total_cases": 2500,
+    "matchable_pairs": 120,
+    "duplicate_groups": 44
+  },
+  "cross_center_matches": {
+    "agent": 102,
+    "baseline": 74,
+    "multiple": 1.4
+  },
+  "recall": {
+    "agent_pct": 85,
+    "baseline_pct": 61.7
+  },
+  "confident_auto_reunion_pct": 73.3,
+  "no_name_cases": {
+    "total": 20,
+    "agent_pct": 95,
+    "baseline_note": "keyword baseline cannot use names it doesn't have"
+  },
+  "duplicate_linking": {
+    "groups": 44,
+    "agent_pct": 95.5,
+    "baseline_pct": 100
+  },
+  "avg_match_time_ms": 10.22
+}

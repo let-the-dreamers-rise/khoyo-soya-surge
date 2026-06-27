@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#23211d" />
+<title>Khoya-Paya Surge · Officer Dashboard</title>
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,500;100,600;100,700;100,800;125,700;125,800&family=Mukta:wght@400;500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="rail-brand"><div class="mark" aria-hidden="true"></div><div><b>Khoya-Paya <span style="font-family:Mukta;font-weight:600;font-size:.78rem;opacity:.7">Surge</span></b><span>Officer view · Mela Control</span></div></div>
+    <nav class="rail-nav" aria-label="Primary">
+      <div class="rail-sec">Command</div>
+      <a class="nav-item active" href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg> Overview</a>
+      <a class="nav-item" href="/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> Volunteer console</a>
+    </nav>
+    <div class="rail-foot"><div class="conn"><span class="led"></span> <span id="agentTag">agent: —</span></div></div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div class="crumb"><h1>Mela control — overview</h1><p>Nashik–Trimbakeshwar Simhastha 2027 · all Khoya-Paya centers</p></div>
+      <div class="tb-spacer"></div>
+      <div class="pill surge hideable" id="surgePill" hidden><span class="dot"></span> Surge mode</div>
+      <div class="pill"><span class="clock" id="clock">—</span></div>
+    </header>
+
+    <main class="content">
+      <div class="stat-strip" id="statStrip"></div>
+      <div class="dash-grid">
+        <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+          <div class="panel"><div class="panel-h"><h3>Agent vs. keyword baseline</h3><span class="sub" id="benchSub">2,500-record benchmark</span></div><div class="bars" id="bars"></div>
+            <div class="bench-key" style="display:flex;gap:18px;padding:0 20px 16px;font-size:.8rem;color:var(--ink-2)"><span style="display:inline-flex;align-items:center;gap:7px"><i style="width:14px;height:11px;border-radius:3px;background:var(--saffron)"></i> Khoya-Paya agent</span><span style="display:inline-flex;align-items:center;gap:7px"><i style="width:14px;height:11px;border-radius:3px;background:var(--line-2)"></i> keyword baseline</span></div>
+          </div>
+          <div class="panel"><div class="panel-h"><h3>Live map — all centers</h3><span class="sub">priority zones across the mela grounds</span></div><div style="height:420px;border-radius:0 0 var(--r-lg) var(--r-lg);overflow:hidden"><div id="mapMini" style="height:100%"></div></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px;min-width:0">
+          <div class="panel"><div class="panel-h"><h3>Lane split</h3><span class="sub">open cases</span></div><div style="padding:18px 20px" id="laneSplit"></div></div>
+          <div class="panel"><div class="panel-h"><h3>Load by center</h3><span class="sub">open cases</span></div><div style="padding:14px 20px" id="centerLoad"></div></div>
+          <div class="panel"><div class="panel-h"><h3>Agent activity</h3></div><ul class="feed" id="feed"></ul></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="/js/api.js"></script>
+<script src="/js/map.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>
